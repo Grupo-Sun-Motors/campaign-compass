@@ -14,6 +14,8 @@ export interface CampaignData {
   currency: string;
   amountSpent: number;
   attributionSetting: string;
+  costPerLead: number;
+  leads: number;
   reportStart: string;
   reportEnd: string;
 }
@@ -23,6 +25,8 @@ export interface AggregatedMetrics {
   totalImpressions: number;
   totalSpent: number;
   avgFrequency: number;
+  totalLeads: number;
+  avgCostPerLead: number;
   uniqueAccounts: number;
   uniqueCampaigns: number;
   uniqueAdSets: number;

@@ -6,6 +6,8 @@ interface GroupedRow {
   impressions: number;
   spent: number;
   frequency: number;
+  leads: number;
+  costPerLead: number;
   count: number;
 }
 
@@ -46,6 +48,12 @@ export function DataTable({ data, groupBy }: DataTableProps) {
                 </div>
               </th>
               <th className="px-4 py-3 text-right text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                Leads
+              </th>
+              <th className="px-4 py-3 text-right text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                CPL
+              </th>
+              <th className="px-4 py-3 text-right text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                 Alcance
               </th>
               <th className="px-4 py-3 text-right text-xs font-semibold text-muted-foreground uppercase tracking-wider">
@@ -68,6 +76,16 @@ export function DataTable({ data, groupBy }: DataTableProps) {
                   </span>
                 </td>
                 <td className="px-4 py-3.5 text-right">
+                  <span className="text-sm font-semibold text-primary tabular-nums">
+                    {formatNumber(row.leads)}
+                  </span>
+                </td>
+                <td className="px-4 py-3.5 text-right">
+                  <span className="text-sm text-foreground tabular-nums">
+                    {formatCurrency(row.costPerLead)}
+                  </span>
+                </td>
+                <td className="px-4 py-3.5 text-right">
                   <span className="text-sm text-foreground tabular-nums">
                     {formatNumber(row.reach)}
                   </span>
@@ -83,7 +101,7 @@ export function DataTable({ data, groupBy }: DataTableProps) {
                   </span>
                 </td>
                 <td className="px-4 py-3.5 text-right">
-                  <span className="text-sm font-medium text-primary tabular-nums">
+                  <span className="text-sm font-medium text-muted-foreground tabular-nums">
                     {formatCurrency(row.spent)}
                   </span>
                 </td>

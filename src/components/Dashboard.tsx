@@ -1,4 +1,4 @@
-import { Users, Eye, DollarSign, Repeat, Building2, Megaphone, Layers, FileText, RefreshCw, Upload } from 'lucide-react';
+import { Users, Eye, DollarSign, Repeat, Building2, Megaphone, Layers, FileText, RefreshCw, Upload, UserCheck, Target } from 'lucide-react';
 import { MetricCard } from './MetricCard';
 import { DataTable } from './DataTable';
 import { FilterSidebar } from './FilterSidebar';
@@ -12,6 +12,8 @@ interface DashboardProps {
     impressions: number;
     spent: number;
     frequency: number;
+    leads: number;
+    costPerLead: number;
     count: number;
   }>;
   groupBy: GroupByOption;
@@ -104,6 +106,28 @@ export function Dashboard({
         </div>
 
         {/* Metrics Grid */}
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+          <MetricCard
+            title="Total de Leads"
+            value={formatNumber(metrics.totalLeads)}
+            icon={UserCheck}
+            subtitle="conversões geradas"
+          />
+          <MetricCard
+            title="Custo por Lead"
+            value={formatCurrency(metrics.avgCostPerLead)}
+            icon={Target}
+            subtitle="média por conversão"
+          />
+          <MetricCard
+            title="Valor Investido"
+            value={formatCurrency(metrics.totalSpent)}
+            icon={DollarSign}
+            subtitle="total gasto"
+          />
+        </div>
+
+        {/* Secondary Metrics */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
           <MetricCard
             title="Alcance Total"
@@ -118,30 +142,24 @@ export function Dashboard({
             subtitle="exibições do anúncio"
           />
           <MetricCard
-            title="Valor Investido"
-            value={formatCurrency(metrics.totalSpent)}
-            icon={DollarSign}
-            subtitle="total gasto"
-          />
-          <MetricCard
             title="Frequência Média"
             value={metrics.avgFrequency.toFixed(2)}
             icon={Repeat}
             subtitle="exibições por pessoa"
           />
+          <MetricCard
+            title="Campanhas"
+            value={metrics.uniqueCampaigns}
+            icon={Megaphone}
+          />
         </div>
 
-        {/* Secondary Metrics */}
+        {/* Tertiary Metrics */}
         <div className="grid grid-cols-4 gap-4 mb-6">
           <MetricCard
             title="Contas"
             value={metrics.uniqueAccounts}
             icon={Building2}
-          />
-          <MetricCard
-            title="Campanhas"
-            value={metrics.uniqueCampaigns}
-            icon={Megaphone}
           />
           <MetricCard
             title="Conjuntos"
