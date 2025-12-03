@@ -11,7 +11,7 @@ export function parseMetaCSV(csvContent: string): CampaignData[] {
     if (!line) continue;
 
     const values = parseCSVLine(line);
-    if (values.length < 17) continue;
+    if (values.length < 19) continue;
 
     // Skip summary row (first data row has empty account name)
     if (!values[0] && !values[1]) continue;
@@ -20,6 +20,8 @@ export function parseMetaCSV(csvContent: string): CampaignData[] {
     const impressions = parseFloat(values[10]) || 0;
     const frequency = parseFloat(values[11]) || 0;
     const amountSpent = parseFloat(values[13]) || 0;
+    const costPerLead = parseFloat(values[15]) || 0;
+    const leads = parseFloat(values[16]) || 0;
 
     data.push({
       accountName: values[0] || 'Sem conta',
@@ -37,8 +39,10 @@ export function parseMetaCSV(csvContent: string): CampaignData[] {
       currency: values[12] || 'BRL',
       amountSpent,
       attributionSetting: values[14] || '',
-      reportStart: values[15] || '',
-      reportEnd: values[16] || '',
+      costPerLead,
+      leads,
+      reportStart: values[17] || '',
+      reportEnd: values[18] || '',
     });
   }
 
@@ -77,12 +81,16 @@ export function calculateMetrics(data: CampaignData[]) {
   const totalImpressions = data.reduce((sum, d) => sum + d.impressions, 0);
   const totalSpent = data.reduce((sum, d) => sum + d.amountSpent, 0);
   const avgFrequency = totalImpressions > 0 ? totalImpressions / totalReach : 0;
+  const totalLeads = data.reduce((sum, d) => sum + d.leads, 0);
+  const avgCostPerLead = totalLeads > 0 ? totalSpent / totalLeads : 0;
 
   return {
     totalReach,
     totalImpressions,
     totalSpent,
     avgFrequency,
+    totalLeads,
+    avgCostPerLead,
     uniqueAccounts: uniqueAccounts.size,
     uniqueCampaigns: uniqueCampaigns.size,
     uniqueAdSets: uniqueAdSets.size,
@@ -117,12 +125,18 @@ export function groupData(data: CampaignData[], groupBy: string) {
     grouped.get(key)!.push(item);
   });
 
-  return Array.from(grouped.entries()).map(([name, items]) => ({
-    name,
-    reach: items.reduce((sum, i) => sum + i.reach, 0),
-    impressions: items.reduce((sum, i) => sum + i.impressions, 0),
-    spent: items.reduce((sum, i) => sum + i.amountSpent, 0),
-    frequency: items.reduce((sum, i) => sum + i.impressions, 0) / items.reduce((sum, i) => sum + i.reach, 0) || 0,
-    count: items.length,
-  })).sort((a, b) => b.spent - a.spent);
+  return Array.from(grouped.entries()).map(([name, items]) => {
+    const totalSpent = items.reduce((sum, i) => sum + i.amountSpent, 0);
+    const totalLeads = items.reduce((sum, i) => sum + i.leads, 0);
+    return {
+      name,
+      reach: items.reduce((sum, i) => sum + i.reach, 0),
+      impressions: items.reduce((sum, i) => sum + i.impressions, 0),
+      spent: totalSpent,
+      frequency: items.reduce((sum, i) => sum + i.impressions, 0) / items.reduce((sum, i) => sum + i.reach, 0) || 0,
+      leads: totalLeads,
+      costPerLead: totalLeads > 0 ? totalSpent / totalLeads : 0,
+      count: items.length,
+    };
+  }).sort((a, b) => b.spent - a.spent);
 }
