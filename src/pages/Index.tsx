@@ -14,6 +14,10 @@ const Index = () => {
     setGroupBy,
     filters,
     setFilters,
+    columnVisibility,
+    setColumnVisibility,
+    sortState,
+    toggleSort,
     importCSV,
     clearData,
     resetFilters,
@@ -50,6 +54,10 @@ const Index = () => {
             setGroupBy={setGroupBy}
             filters={filters}
             setFilters={setFilters}
+            columnVisibility={columnVisibility}
+            setColumnVisibility={setColumnVisibility}
+            sortState={sortState}
+            onSort={toggleSort}
             uniqueAccounts={uniqueAccounts}
             uniqueCampaigns={uniqueCampaigns}
             uniqueAdSets={uniqueAdSets}
