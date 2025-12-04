@@ -1,8 +1,8 @@
-import { Users, Eye, DollarSign, Repeat, Building2, Megaphone, Layers, FileText, RefreshCw, Upload, UserCheck, Target } from 'lucide-react';
+import { Users, Eye, DollarSign, Repeat, Building2, Megaphone, Layers, FileText, RefreshCw, Upload, UserCheck, Target, MousePointer } from 'lucide-react';
 import { MetricCard } from './MetricCard';
 import { DataTable } from './DataTable';
 import { FilterSidebar } from './FilterSidebar';
-import { AggregatedMetrics, FilterState, GroupByOption } from '@/types/campaign';
+import { AggregatedMetrics, FilterState, GroupByOption, ColumnVisibility, SortState, SortField } from '@/types/campaign';
 
 interface DashboardProps {
   metrics: AggregatedMetrics;
@@ -14,12 +14,19 @@ interface DashboardProps {
     frequency: number;
     leads: number;
     costPerLead: number;
+    linkClicks: number;
+    ctr: number;
+    cpm: number;
     count: number;
   }>;
   groupBy: GroupByOption;
   setGroupBy: (groupBy: GroupByOption) => void;
   filters: FilterState;
   setFilters: (filters: FilterState) => void;
+  columnVisibility: ColumnVisibility;
+  setColumnVisibility: (visibility: ColumnVisibility) => void;
+  sortState: SortState;
+  onSort: (field: SortField) => void;
   uniqueAccounts: string[];
   uniqueCampaigns: string[];
   uniqueAdSets: string[];
@@ -35,6 +42,10 @@ export function Dashboard({
   setGroupBy,
   filters,
   setFilters,
+  columnVisibility,
+  setColumnVisibility,
+  sortState,
+  onSort,
   uniqueAccounts,
   uniqueCampaigns,
   uniqueAdSets,
@@ -93,7 +104,6 @@ export function Dashboard({
                     const reader = new FileReader();
                     reader.onload = (ev) => {
                       const content = ev.target?.result as string;
-                      // This will trigger a re-import via the parent
                       window.dispatchEvent(new CustomEvent('importCSV', { detail: content }));
                     };
                     reader.readAsText(file, 'UTF-8');
@@ -142,15 +152,16 @@ export function Dashboard({
             subtitle="exibições do anúncio"
           />
           <MetricCard
+            title="Cliques no Link"
+            value={formatNumber(metrics.totalLinkClicks)}
+            icon={MousePointer}
+            subtitle="total de cliques"
+          />
+          <MetricCard
             title="Frequência Média"
             value={metrics.avgFrequency.toFixed(2)}
             icon={Repeat}
             subtitle="exibições por pessoa"
-          />
-          <MetricCard
-            title="Campanhas"
-            value={metrics.uniqueCampaigns}
-            icon={Megaphone}
           />
         </div>
 
@@ -160,6 +171,11 @@ export function Dashboard({
             title="Contas"
             value={metrics.uniqueAccounts}
             icon={Building2}
+          />
+          <MetricCard
+            title="Campanhas"
+            value={metrics.uniqueCampaigns}
+            icon={Megaphone}
           />
           <MetricCard
             title="Conjuntos"
@@ -174,7 +190,13 @@ export function Dashboard({
         </div>
 
         {/* Data Table */}
-        <DataTable data={groupedData} groupBy={groupBy} />
+        <DataTable 
+          data={groupedData} 
+          groupBy={groupBy} 
+          columnVisibility={columnVisibility}
+          sortState={sortState}
+          onSort={onSort}
+        />
       </main>
 
       {/* Filter Sidebar */}
@@ -183,6 +205,8 @@ export function Dashboard({
         setFilters={setFilters}
         groupBy={groupBy}
         setGroupBy={setGroupBy}
+        columnVisibility={columnVisibility}
+        setColumnVisibility={setColumnVisibility}
         uniqueAccounts={uniqueAccounts}
         uniqueCampaigns={uniqueCampaigns}
         uniqueAdSets={uniqueAdSets}
